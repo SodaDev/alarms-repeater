@@ -1,0 +1,162 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Alarms Repeater solution
+
+Resources:
+  #######################
+  ### Alarm Filtering ###
+  #######################
+  AlarmFilterLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub
+        - '/aws/lambda/${LambdaName}'
+        - { LambdaName: !Ref AlarmFilterFunction }
+      RetentionInDays: 14
+
+  AlarmFilterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: AlarmFilter
+      CodeUri: alarm-filter/
+      Handler: app.filterHandler
+      Runtime: nodejs16.x
+      Timeout: 15
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref RepeaterStateMachine
+      Events:
+        AlarmBridgeRule:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              detail-type:
+                - CloudWatch Alarm State Change
+              source:
+                - aws.cloudwatch
+              detail:
+                state:
+                  value:
+                    - ALARM
+    Policies:
+      - StepFunctionsExecutionPolicy:
+          StateMachineName: !GetAtt RepeaterStateMachine.Name
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2021"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  #####################
+  ### Alarm Checker ###
+  #####################
+  AlarmCheckerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub
+        - '/aws/lambda/${LambdaName}'
+        - { LambdaName: !Ref AlarmCheckerFunction }
+      RetentionInDays: 14
+
+  AlarmCheckerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: AlarmChecker
+      CodeUri: alarm-filter/
+      Handler: app.checkerHandler
+      Runtime: nodejs16.x
+      Timeout: 15
+      Architectures:
+        - arm64
+      Policies:
+        - Statement:
+            - Sid: CwAccess
+              Effect: Allow
+              Action:
+                - cloudwatch:DescribeAlarms
+                - cloudwatch:SetAlarmState
+              Resource:
+                - "*"
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2021"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  AlarmsRepeaterStatusCheckerInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AlarmCheckerFunction
+      Action: lambda:InvokeFunction
+      Principal: !Sub states.${AWS::Region}.amazonaws.com
+
+  RepeaterStateMachineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: !Sub states.${AWS::Region}.amazonaws.com
+
+  RepeaterStateMachineRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: invokeStatusChecker
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: lambda:InvokeFunction
+            Effect: Allow
+            Resource: !GetAtt AlarmCheckerFunction.Arn
+      Roles:
+        - !Ref RepeaterStateMachineRole
+
+  RepeaterStateMachine:
+    Type: AWS::Serverless::StateMachine
+    DependsOn:
+      - RepeaterStateMachineRole
+      - RepeaterStateMachineRolePolicy
+    Properties:
+      Role: !GetAtt RepeaterStateMachineRole.Arn
+      Definition:
+        StartAt: WaitXSeconds
+        States:
+          WaitXSeconds:
+            Type: Wait
+            # Seconds: !FindInMap [ Properties, !Ref Environment, alarmCheckInterval ]
+            Seconds: 900
+            Next: CheckAlarmStatus
+          IsAlarmStillInAlarmState:
+            Type: Choice
+            Choices:
+              - Variable: "$.currState"
+                StringEquals: "ALARM"
+                Next: WaitXSeconds
+            Default: AlarmIsNotInAlarmAnymore
+          AlarmIsNotInAlarmAnymore:
+            Type: Succeed
+          CheckAlarmStatus:
+            Type: Task
+            ResultPath: "$"
+            Resource: !GetAtt AlarmCheckerFunction.Arn
+            Next: IsAlarmStillInAlarmState
+            Retry:
+              - ErrorEquals:
+                  - Lambda.ServiceException
+                  - Lambda.AWSLambdaException
+                  - Lambda.SdkClientException
+                IntervalSeconds: 2
+                MaxAttempts: 6
+                BackoffRate: 2
