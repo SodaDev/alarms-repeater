@@ -1,0 +1,67 @@
+{
+  "ActionsEnabled": true,
+  "AlarmActions": [
+    "arn:aws:sns:eu-west-1:123456789:DummyAlarmName"
+  ],
+  "AlarmArn": "...",
+  "AlarmConfigurationUpdatedTimestamp": "2022-11-06 16:11:55.635000+00:00",
+  "AlarmDescription": "Too high failures ratio",
+  "AlarmName": "dummy-function-DummyErrorPercentageAlarm-PM5CG7X05G4P",
+  "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+  "Dimensions": [],
+  "EvaluationPeriods": 1,
+  "InsufficientDataActions": [],
+  "Metrics": [
+    {
+      "Id": "e1",
+      "Expression": "100 - 100 * errors / MAX([errors, invocations])",
+      "Label": "Success rate (%)"
+    },
+    {
+      "Id": "errors",
+      "MetricStat": {
+        "Metric": {
+          "Namespace": "AWS/Lambda",
+          "MetricName": "Errors",
+          "Dimensions": [
+            {
+              "Name": "FunctionName",
+              "Value": "Dummy"
+            }
+          ]
+        },
+        "Period": 60,
+        "Stat": "Sum",
+        "Unit": "Count"
+      },
+      "ReturnData": false
+    },
+    {
+      "Id": "invocations",
+      "MetricStat": {
+        "Metric": {
+          "Namespace": "AWS/Lambda",
+          "MetricName": "Invocations",
+          "Dimensions": [
+            {
+              "Name": "FunctionName",
+              "Value": "Dummy"
+            }
+          ]
+        },
+        "Period": 60,
+        "Stat": "Sum",
+        "Unit": "Count"
+      },
+      "ReturnData": false
+    }
+  ],
+  "OKActions": [
+    "arn:aws:sns:eu-west-1:123456789:DummyAlarmName"
+  ],
+  "StateReason": "forced test reason",
+  "StateUpdatedTimestamp": "2022-11-06 16:36:21.862000+00:00",
+  "StateValue": "ALARM",
+  "Threshold": 0,
+  "TreatMissingData": "breaching"
+}

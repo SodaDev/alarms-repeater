@@ -1,0 +1,18 @@
+{
+  "AWSAccountId": "123456",
+  "AlarmActions": [
+    "arn:aws:sns:eu-west-1:123456:DummyAlarmName"
+  ],
+  "AlarmArn": "arn:aws:cloudwatch:eu-west-1:123456:alarm:Dummy composite alarm",
+  "AlarmDescription": "Test dummy alarm",
+  "AlarmName": "Dummy composite alarm",
+  "AlarmRule": "ALARM(dummy-function-DummyErrorAlarm-1LWOKJ2U4UZ2U) OR ALARM(dummy-function-DummyErrorPercentageAlarm-PM5CG7X05G4P)",
+  "InsufficientDataActions": [],
+  "NewStateReason": "forced test reason",
+  "NewStateValue": "ALARM",
+  "OKActions": [],
+  "OldStateValue": "OK",
+  "Region": "EU (Ireland)",
+  "StateChangeTime": "2022-11-06T18:21:08.101+0000",
+  "TriggeringChildren": []
+}

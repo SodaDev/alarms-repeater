@@ -1,0 +1,47 @@
+{
+  "version": "0",
+  "id": "3013e71f-af1a-5792-0af8-b89215bc9a44",
+  "detail-type": "CloudWatch Alarm State Change",
+  "source": "aws.cloudwatch",
+  "account": "123456",
+  "time": "2022-11-04T09:46:03Z",
+  "region": "eu-west-1",
+  "resources": [
+    "arn:aws:cloudwatch:eu-west-1:123456:alarm:dummy-function-DummyErrorAlarm-1LWOKJ2U4UZ2U"
+  ],
+  "detail": {
+    "alarmName": "dummy-function-DummyErrorAlarm-1LWOKJ2U4UZ2U",
+    "state": {
+      "value": "ALARM",
+      "reason": "Threshold Crossed: 1 datapoint [2.0 (04/11/22 09:44:00)] was greater than or equal to the threshold (1.0).",
+      "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2022-11-04T09:46:03.938+0000\",\"startDate\":\"2022-11-04T09:44:00.000+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[2.0],\"threshold\":1.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2022-11-04T09:44:00.000+0000\",\"sampleCount\":4.0,\"value\":2.0}]}",
+      "timestamp": "2022-11-04T09:46:03.940+0000"
+    },
+    "previousState": {
+      "value": "OK",
+      "reason": "Threshold Crossed: no datapoints were received for 1 period and 1 missing datapoint was treated as [NonBreaching].",
+      "reasonData": "{\"version\":\"1.0\",\"queryDate\":\"2022-11-03T21:17:03.866+0000\",\"statistic\":\"Sum\",\"period\":60,\"recentDatapoints\":[],\"threshold\":1.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2022-11-03T21:16:00.000+0000\"}]}",
+      "timestamp": "2022-11-03T21:17:03.867+0000"
+    },
+    "configuration": {
+      "metrics": [
+        {
+          "id": "cec21f1c-6bae-ef98-89ba-d16859edbcaf",
+          "metricStat": {
+            "metric": {
+              "namespace": "AWS/Lambda",
+              "name": "Errors",
+              "dimensions": {
+                "FunctionName": "Dummy"
+              }
+            },
+            "period": 60,
+            "stat": "Sum"
+          },
+          "returnData": true
+        }
+      ],
+      "description": "Lambda errors"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "ActionsEnabled": true,
+  "AlarmActions": [
+    "arn:aws:sns:eu-west-1:123456:DummyAlarmName"
+  ],
+  "AlarmArn": "...",
+  "AlarmConfigurationUpdatedTimestamp": "2022-11-06 17:22:21.767000+00:00",
+  "AlarmDescription": "Lambda errors",
+  "AlarmName": "dummy-function-DummyErrorAlarm-1LWOKJ2U4UZ2U",
+  "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+  "Dimensions": [
+    {
+      "Name": "FunctionName",
+      "Value": "Dummy"
+    }
+  ],
+  "EvaluationPeriods": 1,
+  "InsufficientDataActions": [],
+  "MetricName": "Errors",
+  "Namespace": "AWS/Lambda",
+  "OKActions": [
+    "arn:aws:sns:eu-west-1:123456:DummyAlarmName"
+  ],
+  "Period": 300,
+  "StateReason": "Threshold Crossed: no datapoints were received for 1 period and 1 missing datapoint was treated as [Breaching].",
+  "StateReasonData": "{\"version\":\"1.0\",\"queryDate\":\"2022-11-06T17:23:25.328+0000\",\"statistic\":\"Sum\",\"period\":300,\"recentDatapoints\":[],\"threshold\":0.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2022-11-06T17:18:00.000+0000\"}]}",
+  "StateUpdatedTimestamp": "2022-11-06 17:23:25.332000+00:00",
+  "StateValue": "ALARM",
+  "Statistic": "Sum",
+  "Threshold": 0,
+  "TreatMissingData": "breaching"
+}

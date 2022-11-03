@@ -1,0 +1,16 @@
+{
+  "ActionsEnabled": true,
+  "AlarmActions": [
+    "arn:aws:sns:eu-west-1:123456:DummyAlarmName"
+  ],
+  "AlarmArn": "arn:aws:cloudwatch:eu-west-1:123456:alarm:Dummy composite alarm",
+  "AlarmConfigurationUpdatedTimestamp": "2022-11-06 17:40:22.767000+00:00",
+  "AlarmDescription": "Test dummy alarm",
+  "AlarmName": "Dummy composite alarm",
+  "AlarmRule": "ALARM(dummy-function-DummyErrorAlarm-1LWOKJ2U4UZ2U) OR ALARM(dummy-function-DummyErrorPercentageAlarm-PM5CG7X05G4P)",
+  "InsufficientDataActions": [],
+  "OKActions": [],
+  "StateReason": "forced test reason",
+  "StateUpdatedTimestamp": "2022-11-06 18:21:08.101000+00:00",
+  "StateValue": "ALARM"
+}

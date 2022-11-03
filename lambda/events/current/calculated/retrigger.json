@@ -1,0 +1,71 @@
+{
+  "AlarmName": "dummy-function-DummyErrorPercentageAlarm-PM5CG7X05G4P",
+  "AlarmDescription": "Too high failures ratio",
+  "AWSAccountId": "190192394281",
+  "AlarmConfigurationUpdatedTimestamp": "2022-11-06T21:38:45.746+0000",
+  "NewStateValue": "ALARM",
+  "NewStateReason": "Threshold Crossed: no datapoints were received for 1 period and 1 missing datapoint was treated as [Breaching].",
+  "StateChangeTime": "2022-11-06T21:39:49.342+0000",
+  "Region": "EU (Ireland)",
+  "AlarmArn": "arn:aws:cloudwatch:eu-west-1:190192394281:alarm:dummy-function-DummyErrorPercentageAlarm-PM5CG7X05G4P",
+  "OldStateValue": "OK",
+  "OKActions": [],
+  "AlarmActions": [
+    "arn:aws:sns:eu-west-1:190192394281:DummyAlarmName"
+  ],
+  "InsufficientDataActions": [],
+  "Trigger": {
+    "Period": 60,
+    "EvaluationPeriods": 1,
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Threshold": 0.0,
+    "TreatMissingData": "breaching",
+    "EvaluateLowSampleCountPercentile": "",
+    "Metrics": [
+      {
+        "Expression": "100 - 100 * errors / MAX([errors, invocations])",
+        "Id": "e1",
+        "Label": "Success rate (%)",
+        "ReturnData": true
+      },
+      {
+        "Id": "errors",
+        "MetricStat": {
+          "Metric": {
+            "Dimensions": [
+              {
+                "value": "Dummy",
+                "name": "FunctionName"
+              }
+            ],
+            "MetricName": "Errors",
+            "Namespace": "AWS/Lambda"
+          },
+          "Period": 60,
+          "Stat": "Sum",
+          "Unit": "Count"
+        },
+        "ReturnData": false
+      },
+      {
+        "Id": "invocations",
+        "MetricStat": {
+          "Metric": {
+            "Dimensions": [
+              {
+                "value": "Dummy",
+                "name": "FunctionName"
+              }
+            ],
+            "MetricName": "Invocations",
+            "Namespace": "AWS/Lambda"
+          },
+          "Period": 60,
+          "Stat": "Sum",
+          "Unit": "Count"
+        },
+        "ReturnData": false
+      }
+    ]
+  }
+}

@@ -19,7 +19,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: AlarmFilter
-      CodeUri: alarm-filter/
+      CodeUri: lambda/
       Handler: app.filterHandler
       Runtime: nodejs16.x
       Timeout: 15
@@ -41,9 +41,17 @@ Resources:
                 state:
                   value:
                     - ALARM
-    Policies:
-      - StepFunctionsExecutionPolicy:
-          StateMachineName: !GetAtt RepeaterStateMachine.Name
+      Policies:
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt RepeaterStateMachine.Name
+        - Statement:
+            - Sid: CwAccess
+              Effect: Allow
+              Action:
+                - cloudwatch:DescribeAlarms
+                - cloudwatch:ListTagsForResource
+              Resource:
+                - "*"
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -68,18 +76,21 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: AlarmChecker
-      CodeUri: alarm-filter/
+      CodeUri: lambda/
       Handler: app.checkerHandler
       Runtime: nodejs16.x
       Timeout: 15
       Architectures:
         - arm64
       Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: "*"
         - Statement:
             - Sid: CwAccess
               Effect: Allow
               Action:
                 - cloudwatch:DescribeAlarms
+                - cloudwatch:DescribeAlarmHistory
                 - cloudwatch:SetAlarmState
               Resource:
                 - "*"
@@ -135,13 +146,12 @@ Resources:
         States:
           WaitXSeconds:
             Type: Wait
-            # Seconds: !FindInMap [ Properties, !Ref Environment, alarmCheckInterval ]
-            Seconds: 900
+            Seconds: 60
             Next: CheckAlarmStatus
           IsAlarmStillInAlarmState:
             Type: Choice
             Choices:
-              - Variable: "$.currState"
+              - Variable: "$.currentState"
                 StringEquals: "ALARM"
                 Next: WaitXSeconds
             Default: AlarmIsNotInAlarmAnymore
